@@ -1,6 +1,7 @@
 import SignUpPage from "./SignUpPage.vue";
 import { render, screen } from "@testing-library/vue";
 import "@testing-library/jest-dom"
+import userEvent from "@testing-library/user-event"
 
 describe("SignUp Page", () => {
     describe("Layout", () => {
@@ -45,6 +46,19 @@ describe("SignUp Page", () => {
             const button = screen.queryByRole("button", { name: "Sign Up"});
             expect(button).toBeDisabled()
         });
+    })
 
+    describe('Interações', () => {
+        it("Ativando o botão de enviar quando os campos de senha estiverem preenchidos com o mesmo valor", async () => {
+            render(SignUpPage);
+            const passwordInput = screen.queryByLabelText("Password");
+            const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
+
+            await userEvent.type(passwordInput, 'S3nh4')
+            await userEvent.type(passwordRepeatInput, 'S3nh4')
+
+            const button = screen.queryByRole("button", { name: "Sign Up"});
+            expect(button).toBeEnabled()
+        })
     })
 })
