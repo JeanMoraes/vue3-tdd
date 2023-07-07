@@ -52,14 +52,21 @@ describe("SignUp Page", () => {
     })
 
     describe('Interações', () => {
-        it("Ativando o botão de enviar quando os campos de senha estiverem preenchidos com o mesmo valor", async () => {
+        const setup = async () => {
             render(SignUpPage);
+            const usernamedInput = screen.queryByLabelText("Username");
+            const emailInput = screen.queryByLabelText("E-mail");
             const passwordInput = screen.queryByLabelText("Password");
             const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
 
+            await userEvent.type(usernamedInput, 'user1')
+            await userEvent.type(emailInput, 'user1@email.com')
             await userEvent.type(passwordInput, 'S3nh4')
             await userEvent.type(passwordRepeatInput, 'S3nh4')
+        }
 
+        it("Ativando o botão de enviar quando os campos de senha estiverem preenchidos com o mesmo valor", async () => {
+            await setup()
             const button = screen.queryByRole("button", { name: "Sign Up"});
             expect(button).toBeEnabled()
         });
@@ -75,18 +82,7 @@ describe("SignUp Page", () => {
             );
             server.listen()
 
-
-            render(SignUpPage);
-            const usernamedInput = screen.queryByLabelText("Username");
-            const emailInput = screen.queryByLabelText("E-mail");
-            const passwordInput = screen.queryByLabelText("Password");
-            const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
-
-            await userEvent.type(usernamedInput, 'user1')
-            await userEvent.type(emailInput, 'user1@email.com')
-            await userEvent.type(passwordInput, 'S3nh4')
-            await userEvent.type(passwordRepeatInput, 'S3nh4')
-
+            await setup()
             const button = screen.queryByRole("button", { name: "Sign Up"});
 
             // const mockFn = jest.fn()
@@ -115,19 +111,8 @@ describe("SignUp Page", () => {
                 })
             );
             server.listen()
-
-
-            render(SignUpPage);
-            const usernamedInput = screen.queryByLabelText("Username");
-            const emailInput = screen.queryByLabelText("E-mail");
-            const passwordInput = screen.queryByLabelText("Password");
-            const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
-
-            await userEvent.type(usernamedInput, 'user1')
-            await userEvent.type(emailInput, 'user1@email.com')
-            await userEvent.type(passwordInput, 'S3nh4')
-            await userEvent.type(passwordRepeatInput, 'S3nh4')
-
+            
+            await setup()
             const button = screen.queryByRole("button", { name: "Sign Up"});
 
             await userEvent.click(button)
