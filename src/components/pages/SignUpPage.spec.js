@@ -111,7 +111,7 @@ describe("SignUp Page", () => {
                 })
             );
             server.listen()
-            
+
             await setup()
             const button = screen.queryByRole("button", { name: "Sign Up"});
 
@@ -120,6 +120,28 @@ describe("SignUp Page", () => {
 
             expect(counter).toBe(1)
            
+        })
+
+        it("Exibindo um indicativo de que a chamada a api está em progresso", async () => {
+            const server = setupServer(
+                rest.post("/api/1.0/users", (req, res, ctx) => {
+                    return res(ctx.status(200))
+                })
+            );
+            server.listen()
+            await setup()
+            const button = screen.queryByRole("button", { name: "Sign Up"});
+            await userEvent.click(button)
+
+            const spinner = screen.queryByRole("status")
+            expect(spinner).toBeInTheDocument()
+           
+        })
+
+        it("Não exibir o loading do api quando não tiver uma requisição", async () => {
+            await setup()
+            const spinner = screen.queryByRole("status")
+            expect(spinner).not.toBeInTheDocument()
         })
     })
 })
