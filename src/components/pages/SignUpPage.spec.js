@@ -104,5 +104,37 @@ describe("SignUp Page", () => {
                 password: 'S3nh4'
             })
         })
+
+        it("Não permitir o clique no botão de enviar durante a chamada da api", async () => {
+            let counter = 0;
+
+            const server = setupServer(
+                rest.post("/api/1.0/users", (req, res, ctx) => {
+                    counter += 1
+                    return res(ctx.status(200))
+                })
+            );
+            server.listen()
+
+
+            render(SignUpPage);
+            const usernamedInput = screen.queryByLabelText("Username");
+            const emailInput = screen.queryByLabelText("E-mail");
+            const passwordInput = screen.queryByLabelText("Password");
+            const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
+
+            await userEvent.type(usernamedInput, 'user1')
+            await userEvent.type(emailInput, 'user1@email.com')
+            await userEvent.type(passwordInput, 'S3nh4')
+            await userEvent.type(passwordRepeatInput, 'S3nh4')
+
+            const button = screen.queryByRole("button", { name: "Sign Up"});
+
+            await userEvent.click(button)
+            await userEvent.click(button)
+
+            expect(counter).toBe(1)
+           
+        })
     })
 })
