@@ -23,7 +23,10 @@
                 </div>
 
                 <div class="text-center">
-                    <button class="btn btn-primary" :disabled="isDisabled" @click.prevent="submit">Sign Up</button>
+                    <button class="btn btn-primary" :disabled="isDisabled || disabled" @click.prevent="submit">
+                        <span v-if="apiProgress" class="spinner-border spinner-border-sm" role="status"></span>
+                        Sign Up
+                    </button>
                 </div>
             </div>
         </form>
@@ -37,14 +40,18 @@ export default {
     name: "SignUpPage",
     data(){
         return {
+            disabled: false,
             username: '',
             email: '',
             password: '',
-            passwordRepeat: ''
+            passwordRepeat: '',
+            apiProgress: false,
         }
     },
     methods: {
         submit() {
+            this.disabled = true
+            this.apiProgress = true
             axios.post('/api/1.0/users', {
                 username: this.username,
                 email: this.email,
