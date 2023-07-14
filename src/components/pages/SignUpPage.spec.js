@@ -1,5 +1,5 @@
 import SignUpPage from "./SignUpPage.vue";
-import { render, screen } from "@testing-library/vue";
+import { render, screen, waitFor } from "@testing-library/vue";
 import "@testing-library/jest-dom"
 import userEvent from "@testing-library/user-event"
 // import axios from "axios"
@@ -52,13 +52,15 @@ describe("SignUp Page", () => {
     })
 
     describe('Interações', () => {
+        let button;
+
         const setup = async () => {
             render(SignUpPage);
             const usernamedInput = screen.queryByLabelText("Username");
             const emailInput = screen.queryByLabelText("E-mail");
             const passwordInput = screen.queryByLabelText("Password");
             const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
-
+            button = screen.queryByRole("button", { name: "Sign Up"});
             await userEvent.type(usernamedInput, 'user1')
             await userEvent.type(emailInput, 'user1@email.com')
             await userEvent.type(passwordInput, 'S3nh4')
@@ -67,7 +69,7 @@ describe("SignUp Page", () => {
 
         it("Ativando o botão de enviar quando os campos de senha estiverem preenchidos com o mesmo valor", async () => {
             await setup()
-            const button = screen.queryByRole("button", { name: "Sign Up"});
+            // const button = screen.queryByRole("button", { name: "Sign Up"});
             expect(button).toBeEnabled()
         });
 
@@ -83,7 +85,7 @@ describe("SignUp Page", () => {
             server.listen()
 
             await setup()
-            const button = screen.queryByRole("button", { name: "Sign Up"});
+            // const button = screen.queryByRole("button", { name: "Sign Up"});
 
             // const mockFn = jest.fn()
             // axios.post = mockFn
@@ -113,7 +115,7 @@ describe("SignUp Page", () => {
             server.listen()
 
             await setup()
-            const button = screen.queryByRole("button", { name: "Sign Up"});
+            // const button = screen.queryByRole("button", { name: "Sign Up"});
 
             await userEvent.click(button)
             await userEvent.click(button)
@@ -122,7 +124,31 @@ describe("SignUp Page", () => {
            
         })
 
-        it("Exibindo um indicativo de que a chamada a api está em progresso", async () => {
+        // it("Exibindo um indicativo de que a chamada a api está em progresso", async () => {
+        //     const server = setupServer(
+        //         rest.post("/api/1.0/users", (req, res, ctx) => {
+        //             return res(ctx.status(200))
+        //         })
+        //     );
+        //     server.listen()
+        //     await setup()
+        //     const button = screen.queryByRole("button", { name: "Sign Up"});
+        //     await userEvent.click(button)
+
+        //     const spinner = screen.queryByRole("status")
+        //     expect(spinner).toBeInTheDocument()
+           
+        // })
+
+        it("Não exibir o loading do api quando não tiver uma requisição", async () => {
+            await setup()
+            const spinner = screen.queryByRole("status")
+            expect(spinner).not.toBeInTheDocument()
+        })
+
+        // -----
+
+        it("Mostrando a mensagem de ativação após o sucesso para a criação do usuário", async () => {
             const server = setupServer(
                 rest.post("/api/1.0/users", (req, res, ctx) => {
                     return res(ctx.status(200))
@@ -130,18 +156,59 @@ describe("SignUp Page", () => {
             );
             server.listen()
             await setup()
-            const button = screen.queryByRole("button", { name: "Sign Up"});
+            // const button = screen.queryByRole("button", { name: "Sign Up"});
             await userEvent.click(button)
+            // await server.close()
 
-            const spinner = screen.queryByRole("status")
-            expect(spinner).toBeInTheDocument()
+            const text = await screen.findByText("Please check your e-mail to active your account")
+            expect(text).toBeInTheDocument()
+        })
+        
+
+        it("Não exibir a mensagem de ativação antes de receber o sucesso ao enviar o formulário", async () => {
+            await setup()
+
+            const text = screen.queryByText("Please check your e-mail to active your account")
+            expect(text).not.toBeInTheDocument()
            
         })
 
-        it("Não exibir o loading do api quando não tiver uma requisição", async () => {
+        // it("não mostrar a mensagem caso tenha falha", async () => {
+        //     const server = setupServer(
+        //         rest.post("/api/1.0/users", (req, res, ctx) => {
+        //             return res(ctx.status(400))
+        //         })
+        //     );
+        //     server.listen()
+        //     await setup()
+        //     const button = screen.queryByRole("button", { name: "Sign Up"});
+        //     await userEvent.click(button)
+        //     await server.close()
+
+        //     const text = screen.queryByText("Please check your e-mail to active your account")
+        //     expect(text).not.toBeInTheDocument()
+        // })
+
+        it("Ocultando o formulário após o sucesso do formulário", async () => {
+            const server = setupServer(
+                rest.post("/api/1.0/users", (req, res, ctx) => {
+                    return res(ctx.status(200))
+                })
+            );
+            server.listen()
             await setup()
-            const spinner = screen.queryByRole("status")
-            expect(spinner).not.toBeInTheDocument()
+            // const button = screen.queryByRole("button", { name: "Sign Up"});
+            const form = screen.queryByTestId("form-sign-up")
+
+            await userEvent.click(button)
+            await server.close()
+
+            await waitFor(() => {
+                expect(form).not.toBeInTheDocument()
+            })
         })
+
+        
+        
     })
 })

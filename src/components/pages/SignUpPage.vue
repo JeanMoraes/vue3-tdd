@@ -1,6 +1,6 @@
 <template>
     <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
-        <form class="card mt-5">
+        <form v-if="!signUpSuccess" class="card mt-5" data-testid="form-sign-up">
             <div class="card-header">
                 <h1 class="text-center">Sign Up</h1>
             </div>
@@ -30,6 +30,9 @@
                 </div>
             </div>
         </form>
+        <div v-if="signUpSuccess" class="alert alert-success" role="alert">
+            Please check your e-mail to active your account
+        </div>
     </div>
 </template>
 
@@ -46,17 +49,24 @@ export default {
             password: '',
             passwordRepeat: '',
             apiProgress: false,
+            signUpSuccess: false,
         }
     },
     methods: {
         submit() {
             this.disabled = true
             this.apiProgress = true
-            axios.post('/api/1.0/users', {
+
+            axios
+            .post('/api/1.0/users', {
                 username: this.username,
                 email: this.email,
                 password: this.password
             })
+            .then(() => {
+                this.signUpSuccess = true
+            })
+            .catch(() => {})
         }
     },
     computed: {
