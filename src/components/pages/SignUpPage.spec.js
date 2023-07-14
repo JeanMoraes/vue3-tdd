@@ -141,13 +141,12 @@ describe("SignUp Page", () => {
                 })
             )
             await setup()
-            const button = screen.queryByRole("button", { name: "Sign Up"});
+            // const button = screen.queryByRole("button", { name: "Sign Up"});
             await userEvent.click(button)
 
             const text = screen.queryByText("Please check your e-mail to active your account")
             expect(text).not.toBeInTheDocument()
         })
-
 
         it("Ocultando o formulário após o sucesso do formulário", async () => {
             await setup()
@@ -158,6 +157,23 @@ describe("SignUp Page", () => {
             await waitFor(() => {
                 expect(form).not.toBeInTheDocument()
             })
-        }) 
+        })
+
+        it("exibindo mensagens de validação para os campos", async () => {
+            server.use(
+                rest.post("/api/1.0/users", (req, res, ctx) => {
+                    return res(ctx.status(400), ctx.json({
+                        validationErrors: {
+                            username: 'Username cannot be null'
+                        },
+                    }))
+                })
+            )
+            await setup()
+            await userEvent.click(button)
+
+            const text = await screen.findByText("Username cannot be null")
+            expect(text).toBeInTheDocument()
+        })
     })
 })
