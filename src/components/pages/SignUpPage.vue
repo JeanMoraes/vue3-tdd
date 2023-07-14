@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="text-center">
-                    <button class="btn btn-primary" :disabled="isDisabled || disabled" @click.prevent="submit">
+                    <button class="btn btn-primary" :disabled="isDisabled || apiProgress" @click.prevent="submit">
                         <span v-if="apiProgress" class="spinner-border spinner-border-sm" role="status"></span>
                         Sign Up
                     </button>
@@ -44,7 +44,6 @@ export default {
     name: "SignUpPage",
     data(){
         return {
-            disabled: false,
             username: '',
             email: '',
             password: '',
@@ -56,7 +55,6 @@ export default {
     },
     methods: {
         submit() {
-            this.disabled = true
             this.apiProgress = true
 
             axios
@@ -72,6 +70,7 @@ export default {
                 if(error.response.status === 400) {
                     this.errors = error.response.data.validationErrors
                 }
+                this.apiProgress = false
             })
         }
     },
