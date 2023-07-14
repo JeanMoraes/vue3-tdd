@@ -52,6 +52,23 @@ describe("SignUp Page", () => {
     })
 
     describe('Interações', () => {
+        let requestBody
+        let counter = 0
+        const server = setupServer(
+            rest.post("/api/1.0/users", (req, res, ctx) => {
+                requestBody = req.body;
+                counter += 1
+                return res(ctx.status(200))
+            })
+        );
+
+        beforeAll(() => server.listen())
+        beforeEach(() => {
+            counter = 0;
+            server.resetHandlers()
+        })
+        afterAll(() => server.close())
+
         let button;
 
         const setup = async () => {
@@ -69,32 +86,14 @@ describe("SignUp Page", () => {
 
         it("Ativando o botão de enviar quando os campos de senha estiverem preenchidos com o mesmo valor", async () => {
             await setup()
-            // const button = screen.queryByRole("button", { name: "Sign Up"});
+            
             expect(button).toBeEnabled()
         });
 
         it("Enviando username, email e senha para o backend", async () => {
-            let requestBody;
-
-            const server = setupServer(
-                rest.post("/api/1.0/users", (req, res, ctx) => {
-                    requestBody = req.body;
-                    return res(ctx.status(200))
-                })
-            );
-            server.listen()
-
             await setup()
-            // const button = screen.queryByRole("button", { name: "Sign Up"});
-
-            // const mockFn = jest.fn()
-            // axios.post = mockFn
-
             await userEvent.click(button)
-            await server.close()
-
-            // const firstCall = mockFn.mock.calls[0]
-            // const body = firstCall[1]
+            await screen.findByText("Please check your e-mail to active your account")
 
             expect(requestBody).toEqual({
                 username: 'user1',
@@ -104,19 +103,7 @@ describe("SignUp Page", () => {
         })
 
         it("Não permitir o clique no botão de enviar durante a chamada da api", async () => {
-            let counter = 0;
-
-            const server = setupServer(
-                rest.post("/api/1.0/users", (req, res, ctx) => {
-                    counter += 1
-                    return res(ctx.status(200))
-                })
-            );
-            server.listen()
-
             await setup()
-            // const button = screen.queryByRole("button", { name: "Sign Up"});
-
             await userEvent.click(button)
             await userEvent.click(button)
 
@@ -124,41 +111,15 @@ describe("SignUp Page", () => {
            
         })
 
-        // it("Exibindo um indicativo de que a chamada a api está em progresso", async () => {
-        //     const server = setupServer(
-        //         rest.post("/api/1.0/users", (req, res, ctx) => {
-        //             return res(ctx.status(200))
-        //         })
-        //     );
-        //     server.listen()
-        //     await setup()
-        //     const button = screen.queryByRole("button", { name: "Sign Up"});
-        //     await userEvent.click(button)
-
-        //     const spinner = screen.queryByRole("status")
-        //     expect(spinner).toBeInTheDocument()
-           
-        // })
-
         it("Não exibir o loading do api quando não tiver uma requisição", async () => {
             await setup()
             const spinner = screen.queryByRole("status")
             expect(spinner).not.toBeInTheDocument()
         })
 
-        // -----
-
         it("Mostrando a mensagem de ativação após o sucesso para a criação do usuário", async () => {
-            const server = setupServer(
-                rest.post("/api/1.0/users", (req, res, ctx) => {
-                    return res(ctx.status(200))
-                })
-            );
-            server.listen()
-            await setup()
-            // const button = screen.queryByRole("button", { name: "Sign Up"});
+            await setup()           
             await userEvent.click(button)
-            // await server.close()
 
             const text = await screen.findByText("Please check your e-mail to active your account")
             expect(text).toBeInTheDocument()
@@ -173,42 +134,30 @@ describe("SignUp Page", () => {
            
         })
 
-        // it("não mostrar a mensagem caso tenha falha", async () => {
-        //     const server = setupServer(
-        //         rest.post("/api/1.0/users", (req, res, ctx) => {
-        //             return res(ctx.status(400))
-        //         })
-        //     );
-        //     server.listen()
-        //     await setup()
-        //     const button = screen.queryByRole("button", { name: "Sign Up"});
-        //     await userEvent.click(button)
-        //     await server.close()
+        it("não mostrar a mensagem caso tenha falha", async () => {
+            server.use(
+                rest.post("/api/1.0/users", (req, res, ctx) => {
+                    return res(ctx.status(400))
+                })
+            )
+            await setup()
+            const button = screen.queryByRole("button", { name: "Sign Up"});
+            await userEvent.click(button)
 
-        //     const text = screen.queryByText("Please check your e-mail to active your account")
-        //     expect(text).not.toBeInTheDocument()
-        // })
+            const text = screen.queryByText("Please check your e-mail to active your account")
+            expect(text).not.toBeInTheDocument()
+        })
+
 
         it("Ocultando o formulário após o sucesso do formulário", async () => {
-            const server = setupServer(
-                rest.post("/api/1.0/users", (req, res, ctx) => {
-                    return res(ctx.status(200))
-                })
-            );
-            server.listen()
             await setup()
-            // const button = screen.queryByRole("button", { name: "Sign Up"});
             const form = screen.queryByTestId("form-sign-up")
 
             await userEvent.click(button)
-            await server.close()
 
             await waitFor(() => {
                 expect(form).not.toBeInTheDocument()
             })
-        })
-
-        
-        
+        }) 
     })
 })
