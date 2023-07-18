@@ -2,18 +2,18 @@
     <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
         <form v-if="!signUpSuccess" class="card mt-5" data-testid="form-sign-up">
             <div class="card-header">
-                <h1 class="text-center">Sign Up</h1>
+                <h1 class="text-center">{{$t('signUp')}}</h1>
             </div>
             <div class="card-body">
-                <Input id="username" label="Username" v-model="username" :help="errors ? errors.username : ''" />
-                <Input id="email" label="E-mail" v-model="email" :help="errors ? errors.email : ''" />
-                <Input id="password" type="password" label="Password" v-model="password" :help="errors ? errors.password : ''" />
-                <Input id="password-repeat" type="password" label="Password Repeat" v-model="passwordRepeat" :help="hasPasswordMismatch ? 'Password mismatch' : ''" />
+                <Input id="username" :label="$t('username')" v-model="username" :help="errors ? errors.username : ''" />
+                <Input id="email" :label="$t('email')" v-model="email" :help="errors ? errors.email : ''" />
+                <Input id="password" type="password" :label="$t('password')" v-model="password" :help="errors ? errors.password : ''" />
+                <Input id="password-repeat" type="password" :label="$t('passwordRepeat')" v-model="passwordRepeat" :help="hasPasswordMismatch ? 'Password mismatch' : ''" />
 
                 <div class="text-center">
                     <button class="btn btn-primary" :disabled="isDisabled || apiProgress" @click.prevent="submit">
                         <span v-if="apiProgress" class="spinner-border spinner-border-sm" role="status"></span>
-                        Sign Up
+                        {{$t('signUp')}}
                     </button>
                 </div>
             </div>
