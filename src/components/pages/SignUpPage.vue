@@ -22,6 +22,8 @@
             Please check your e-mail to active your account
         </div>
     </div>
+    <span title="Português" @click="$i18n.locale = 'pt-br'">BR</span>
+    <span title="English" @click="$i18n.locale = 'en'">EN</span>
 </template>
 
 <script>

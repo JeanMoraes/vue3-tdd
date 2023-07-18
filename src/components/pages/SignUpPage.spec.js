@@ -6,6 +6,8 @@ import userEvent from "@testing-library/user-event"
 import { setupServer } from "msw/node"
 import { rest } from "msw"
 import i18n from "../../locale/i18n";
+import en from "../../locale/en.json"
+import ptBr from "../../locale/pt-br.json"
 
 describe("SignUp Page", () => {
     describe("Layout", () => {
@@ -244,6 +246,60 @@ describe("SignUp Page", () => {
             const input = screen.getByLabelText(label)
             await userEvent.type(input, 'novo texto')
             expect(text).not.toBeInTheDocument()
+        })
+    })
+
+    describe('Internaciolização', () => {
+        const setup = () => {
+            render(SignUpPage, {
+                global: {
+                    plugins: [i18n]
+                }
+            })
+        }
+
+        fit('Idioma inicial dos textos seja em inglês', async () => {
+            setup()
+            expect(screen.queryByRole("heading", {name: en.signUp })).toBeInTheDocument()
+            expect(screen.queryByRole("button", {name: en.signUp })).toBeInTheDocument()
+
+            expect(screen.queryByLabelText(en.username)).toBeInTheDocument()
+            expect(screen.queryByLabelText(en.email)).toBeInTheDocument()
+            expect(screen.queryByLabelText(en.password)).toBeInTheDocument()
+            expect(screen.queryByLabelText(en.passwordRepeat)).toBeInTheDocument()
+        })
+
+        fit('exibir os textos em português depois de selecionarmos o idioma', async () => {
+            setup()
+
+            const portugues = screen.queryByTitle("Português")
+            await userEvent.click(portugues)
+
+            expect(screen.queryByRole("heading", {name: ptBr.signUp })).toBeInTheDocument()
+            expect(screen.queryByRole("button", {name: ptBr.signUp })).toBeInTheDocument()
+
+            expect(screen.queryByLabelText(ptBr.username)).toBeInTheDocument()
+            expect(screen.queryByLabelText(ptBr.email)).toBeInTheDocument()
+            expect(screen.queryByLabelText(ptBr.password)).toBeInTheDocument()
+            expect(screen.queryByLabelText(ptBr.passwordRepeat)).toBeInTheDocument()
+        })
+
+        fit('exibir os textos em inglês depois de traduzirmos a página a partir do português', async () => {
+            setup()
+
+            const portugues = screen.queryByTitle("Português")
+            await userEvent.click(portugues)
+
+            const english = screen.queryByTitle("English")
+            await userEvent.click(english)
+
+            expect(screen.queryByRole("heading", {name: en.signUp })).toBeInTheDocument()
+            expect(screen.queryByRole("button", {name: en.signUp })).toBeInTheDocument()
+
+            expect(screen.queryByLabelText(en.username)).toBeInTheDocument()
+            expect(screen.queryByLabelText(en.email)).toBeInTheDocument()
+            expect(screen.queryByLabelText(en.password)).toBeInTheDocument()
+            expect(screen.queryByLabelText(en.passwordRepeat)).toBeInTheDocument()
         })
     })
 })
