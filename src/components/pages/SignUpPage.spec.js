@@ -5,53 +5,62 @@ import userEvent from "@testing-library/user-event"
 // import axios from "axios"
 import { setupServer } from "msw/node"
 import { rest } from "msw"
+import i18n from "../../locale/i18n";
 
 describe("SignUp Page", () => {
     describe("Layout", () => {
+        const setup = () => {
+            render(SignUpPage, {
+                global: {
+                    plugins: [i18n]
+                }
+            });
+        }
+
         it("Testando o Header", () => {
-            render(SignUpPage);
+            setup();
             const header = screen.queryByRole("heading", { name: "Sign Up"});
             expect(header).toBeInTheDocument()
         });
 
         it("Testando campo de usuário", () => {
-            render(SignUpPage);
+            setup();
             const input = screen.queryByLabelText("Username");
             expect(input).toBeInTheDocument()
         });
 
         it("Testando campo de email", () => {
-            render(SignUpPage);
+            setup();
             const input = screen.queryByLabelText("E-mail");
             expect(input).toBeInTheDocument()
         });
 
         it("Testando campo de senha", () => {
-            render(SignUpPage);
+            setup();
             const input = screen.queryByLabelText("Password");
             expect(input).toBeInTheDocument()
         });
 
         it("Testando se o tipo do campo de senha é igual a password", () => {
-            render(SignUpPage);
+            setup();
             const input = screen.queryByLabelText("Password");
             expect(input.type).toBe("password")
         });
 
         it("Testando campo de repetir a senha", () => {
-            render(SignUpPage);
+            setup();
             const input = screen.queryByLabelText("Password Repeat");
             expect(input).toBeInTheDocument()
         });
 
         it("Testando o botão de enviar", () => {
-            render(SignUpPage);
+            setup();
             const button = screen.queryByRole("button", { name: "Sign Up"});
             expect(button).toBeInTheDocument()
         });
 
         it("Testando se o botão de enviar inicia desativado", () => {
-            render(SignUpPage);
+            setup();
             const button = screen.queryByRole("button", { name: "Sign Up"});
             expect(button).toBeDisabled()
         });
@@ -78,7 +87,11 @@ describe("SignUp Page", () => {
         let button, passwordInput, passwordRepeatInput, usernamedInput;
 
         const setup = async () => {
-            render(SignUpPage);
+            render(SignUpPage, {
+                global: {
+                    plugins: [i18n]
+                }
+            });
             usernamedInput = screen.queryByLabelText("Username");
             const emailInput = screen.queryByLabelText("E-mail");
             passwordInput = screen.queryByLabelText("Password");
