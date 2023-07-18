@@ -84,6 +84,16 @@ describe("SignUp Page", () => {
             await userEvent.type(passwordRepeatInput, 'S3nh4')
         }
 
+        const generateValidationError = (field, message) => {
+            return  rest.post("/api/1.0/users", (req, res, ctx) => {
+                return res(ctx.status(400), ctx.json({
+                    validationErrors: {
+                        [field]: message
+                    },
+                }))
+            })
+        }
+
         it("Ativando o botão de enviar quando os campos de senha estiverem preenchidos com o mesmo valor", async () => {
             await setup()
             
@@ -158,33 +168,22 @@ describe("SignUp Page", () => {
             })
         })
 
-        it("exibindo mensagens de validação para os campos", async () => {
-            server.use(
-                rest.post("/api/1.0/users", (req, res, ctx) => {
-                    return res(ctx.status(400), ctx.json({
-                        validationErrors: {
-                            username: 'Username cannot be null'
-                        },
-                    }))
-                })
-            )
+        it.each`
+            field           | message
+            ${'username'}   | ${'Username cannot be null'}
+            ${'email'}      | ${'E-mail cannot be null'}
+        `("exibindo mensagens de validação para o input de $field", async ({field, message}) => {
+            
+            server.use(generateValidationError(field, message))
             await setup()
             await userEvent.click(button)
 
-            const text = await screen.findByText("Username cannot be null")
+            const text = await screen.findByText(message)
             expect(text).toBeInTheDocument()
         })
 
         it("ocultando o spinner ao receber um erro da api", async () => {
-            server.use(
-                rest.post("/api/1.0/users", (req, res, ctx) => {
-                    return res(ctx.status(400), ctx.json({
-                        validationErrors: {
-                            username: 'Username cannot be null'
-                        },
-                    }))
-                })
-            )
+            server.use(generateValidationError('username', 'Username cannot be null'))
             await setup()
             await userEvent.click(button)
 
@@ -194,21 +193,12 @@ describe("SignUp Page", () => {
         })
 
         it("habilitanto o botão ao receber um erro da api", async () => {
-            server.use(
-                rest.post("/api/1.0/users", (req, res, ctx) => {
-                    return res(ctx.status(400), ctx.json({
-                        validationErrors: {
-                            username: 'Username cannot be null'
-                        },
-                    }))
-                })
-            )
+            server.use(generateValidationError('username', 'Username cannot be null'))
             await setup()
             await userEvent.click(button)
 
             await screen.findByText("Username cannot be null")
             expect(button).toBeEnabled()
         })
-
     })
 })

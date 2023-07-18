@@ -6,10 +6,7 @@
             </div>
             <div class="card-body">
                 <Input id="username" label="Username" v-model="username" :help="errors ? errors.username : ''" />
-                <div class="mb-3">
-                    <label for="e-mail" class="form-label">E-mail</label>
-                    <input id="e-mail" class="form-control" v-model="email" />
-                </div>
+                <Input id="email" label="E-mail" v-model="email" :help="errors ? errors.email : ''" />
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input id="password" class="form-control" type="password" v-model="password" />
