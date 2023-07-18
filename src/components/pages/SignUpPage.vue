@@ -22,8 +22,8 @@
             Please check your e-mail to active your account
         </div>
     </div>
-    <span title="Português" @click="$i18n.locale = 'pt-br'">BR</span>
-    <span title="English" @click="$i18n.locale = 'en'">EN</span>
+    <img src="https://flagsapi.com/US/flat/24.png" title="English" @click="$i18n.locale = 'en'" />
+    <img src="https://flagsapi.com/BR/flat/24.png" title="Português" @click="$i18n.locale = 'pt-br'" />
 </template>
 
 <script>

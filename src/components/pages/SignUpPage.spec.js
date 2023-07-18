@@ -258,7 +258,7 @@ describe("SignUp Page", () => {
             })
         }
 
-        fit('Idioma inicial dos textos seja em inglês', async () => {
+        it('Idioma inicial dos textos seja em inglês', async () => {
             setup()
             expect(screen.queryByRole("heading", {name: en.signUp })).toBeInTheDocument()
             expect(screen.queryByRole("button", {name: en.signUp })).toBeInTheDocument()
@@ -269,7 +269,7 @@ describe("SignUp Page", () => {
             expect(screen.queryByLabelText(en.passwordRepeat)).toBeInTheDocument()
         })
 
-        fit('exibir os textos em português depois de selecionarmos o idioma', async () => {
+        it('exibir os textos em português depois de selecionarmos o idioma', async () => {
             setup()
 
             const portugues = screen.queryByTitle("Português")
@@ -284,7 +284,7 @@ describe("SignUp Page", () => {
             expect(screen.queryByLabelText(ptBr.passwordRepeat)).toBeInTheDocument()
         })
 
-        fit('exibir os textos em inglês depois de traduzirmos a página a partir do português', async () => {
+        it('exibir os textos em inglês depois de traduzirmos a página a partir do português', async () => {
             setup()
 
             const portugues = screen.queryByTitle("Português")
