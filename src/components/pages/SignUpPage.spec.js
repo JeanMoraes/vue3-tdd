@@ -32,6 +32,12 @@ describe("SignUp Page", () => {
             expect(input).toBeInTheDocument()
         });
 
+        it("Testando se o tipo do campo de senha é igual a password", () => {
+            render(SignUpPage);
+            const input = screen.queryByLabelText("Password");
+            expect(input.type).toBe("password")
+        });
+
         it("Testando campo de repetir a senha", () => {
             render(SignUpPage);
             const input = screen.queryByLabelText("Password Repeat");
@@ -69,14 +75,14 @@ describe("SignUp Page", () => {
         })
         afterAll(() => server.close())
 
-        let button;
+        let button, passwordInput, passwordRepeatInput, usernamedInput;
 
         const setup = async () => {
             render(SignUpPage);
-            const usernamedInput = screen.queryByLabelText("Username");
+            usernamedInput = screen.queryByLabelText("Username");
             const emailInput = screen.queryByLabelText("E-mail");
-            const passwordInput = screen.queryByLabelText("Password");
-            const passwordRepeatInput = screen.queryByLabelText("Password Repeat");
+            passwordInput = screen.queryByLabelText("Password");
+            passwordRepeatInput = screen.queryByLabelText("Password Repeat");
             button = screen.queryByRole("button", { name: "Sign Up"});
             await userEvent.type(usernamedInput, 'user1')
             await userEvent.type(emailInput, 'user1@email.com')
@@ -172,6 +178,7 @@ describe("SignUp Page", () => {
             field           | message
             ${'username'}   | ${'Username cannot be null'}
             ${'email'}      | ${'E-mail cannot be null'}
+            ${'password'}   | ${'Password cannot be null'}
         `("exibindo mensagens de validação para o input de $field", async ({field, message}) => {
             
             server.use(generateValidationError(field, message))
@@ -199,6 +206,31 @@ describe("SignUp Page", () => {
 
             await screen.findByText("Username cannot be null")
             expect(button).toBeEnabled()
+        })
+
+        it('Exibindo mensagem de que as senhas digitadas são diferentes', async () => {
+            await setup();
+            await userEvent.type(passwordInput, 'S3nh4')
+            await userEvent.type(passwordRepeatInput, 'S3nh4N0V4')
+
+            const text = await screen.findByText('Password mismatch')
+            expect(text).toBeInTheDocument()
+        })
+
+        it.each`
+            field           | message                       | label
+            ${'username'}   | ${'Username cannot be null'}  | ${'Username'}
+            ${'email'}      | ${'E-mail cannot be null'}    | ${'E-mail'}
+            ${'password'}   | ${'Password cannot be null'}  | ${'Password'}
+        `("limpando os erros dos campos após o usuário alterar o valor do input $field", async ({field, message, label}) => {
+            server.use(generateValidationError(field, message))
+            await setup()
+            await userEvent.click(button)
+
+            const text = await screen.findByText(message)
+            const input = screen.getByLabelText(label)
+            await userEvent.type(input, 'novo texto')
+            expect(text).not.toBeInTheDocument()
         })
     })
 })

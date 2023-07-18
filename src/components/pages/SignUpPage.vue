@@ -7,14 +7,8 @@
             <div class="card-body">
                 <Input id="username" label="Username" v-model="username" :help="errors ? errors.username : ''" />
                 <Input id="email" label="E-mail" v-model="email" :help="errors ? errors.email : ''" />
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input id="password" class="form-control" type="password" v-model="password" />
-                </div>
-                <div class="mb-3">
-                    <label for="password-repeat" class="form-label">Password Repeat</label>
-                    <input id="password-repeat" class="form-control" type="password" v-model="passwordRepeat" />
-                </div>
+                <Input id="password" type="password" label="Password" v-model="password" :help="errors ? errors.password : ''" />
+                <Input id="password-repeat" type="password" label="Password Repeat" v-model="passwordRepeat" :help="hasPasswordMismatch ? 'Password mismatch' : ''" />
 
                 <div class="text-center">
                     <button class="btn btn-primary" :disabled="isDisabled || apiProgress" @click.prevent="submit">
@@ -74,6 +68,20 @@ export default {
     computed: {
         isDisabled() {
             return (this.password && this.passwordRepeat) ? this.password !== this.passwordRepeat : true
+        },
+        hasPasswordMismatch() {
+            return this.password !== this.passwordRepeat
+        }
+    },
+    watch: {
+        username() {
+            delete this.errors.username
+        },
+        email() {
+            delete this.errors.email
+        },
+        password() {
+            delete this.errors.password
         }
     }
 }
