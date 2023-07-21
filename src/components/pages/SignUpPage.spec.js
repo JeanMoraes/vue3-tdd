@@ -10,6 +10,25 @@ import i18n from "../../locale/i18n";
 import en from "../../locale/en.json"
 import ptBr from "../../locale/pt-br.json"
 
+let requestBody
+let counter = 0
+let acceptLanguageHeader;
+const server = setupServer(
+    rest.post("/api/1.0/users", (req, res, ctx) => {
+        requestBody = req.body;
+        counter += 1
+        acceptLanguageHeader = req.headers.get('Accept-Language')
+        return res(ctx.status(200))
+    })
+);
+
+beforeAll(() => server.listen())
+beforeEach(() => {
+    counter = 0;
+    server.resetHandlers()
+})
+afterAll(() => server.close())
+
 describe("SignUp Page", () => {
     describe("Layout", () => {
         const setup = () => {
@@ -70,23 +89,6 @@ describe("SignUp Page", () => {
     })
 
     describe('Interações', () => {
-        let requestBody
-        let counter = 0
-        const server = setupServer(
-            rest.post("/api/1.0/users", (req, res, ctx) => {
-                requestBody = req.body;
-                counter += 1
-                return res(ctx.status(200))
-            })
-        );
-
-        beforeAll(() => server.listen())
-        beforeEach(() => {
-            counter = 0;
-            server.resetHandlers()
-        })
-        afterAll(() => server.close())
-
         let button, passwordInput, passwordRepeatInput, usernamedInput;
 
         const setup = async () => {
@@ -251,7 +253,7 @@ describe("SignUp Page", () => {
     })
 
     describe('Internaciolização', () => {
-        let portugueseLanguage, englishLanguage, password, passwordRepeat;
+        let portugueseLanguage, englishLanguage, username, email, password, passwordRepeat, button;
 
         const setup = () => {
             const app = {
@@ -273,8 +275,11 @@ describe("SignUp Page", () => {
 
             portugueseLanguage = screen.queryByTitle("Português")
             englishLanguage = screen.queryByTitle("English")
+            username = screen.queryByLabelText(en.username)
+            email = screen.queryByLabelText(en.email)
             password = screen.queryByLabelText(en.password)
             passwordRepeat = screen.queryByLabelText(en.passwordRepeat)
+            button = screen.queryByRole("button", { name: en.signUp })
         }
 
         afterEach(() => {
@@ -327,6 +332,29 @@ describe("SignUp Page", () => {
             await userEvent.type(passwordRepeat, "SenhaDiferente")
             const validation = screen.queryByText(ptBr.passwordMismatchValidation)
             expect(validation).toBeInTheDocument()
+        })
+
+        it("Enviando ao backend o accept language en nas requisições", async () => {
+            setup()
+            await userEvent.type(username, "user1")
+            await userEvent.type(email, "user1@email.com")
+            await userEvent.type(password, "S3nh4")
+            await userEvent.type(passwordRepeat, "S3nh4")
+            await userEvent.click(button)
+            await screen.findByText("Please check your e-mail to active your account")
+            expect(acceptLanguageHeader).toBe('en')
+        })
+
+        it("Enviando ao backend o accept language ptBt nas requisições após trocar o idioma", async () => {
+            setup()
+            await userEvent.click(portugueseLanguage)
+            await userEvent.type(username, "user1")
+            await userEvent.type(email, "user1@email.com")
+            await userEvent.type(password, "S3nh4")
+            await userEvent.type(passwordRepeat, "S3nh4")
+            await userEvent.click(button)
+            await screen.findByText("Please check your e-mail to active your account")
+            expect(acceptLanguageHeader).toBe('pt-br')
         })
     })
 })
