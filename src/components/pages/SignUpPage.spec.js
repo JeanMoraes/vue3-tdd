@@ -1,4 +1,5 @@
 import SignUpPage from "./SignUpPage.vue";
+import LanguageSelector from "../../components/LanguageSelector"
 import { render, screen, waitFor } from "@testing-library/vue";
 import "@testing-library/jest-dom"
 import userEvent from "@testing-library/user-event"
@@ -250,13 +251,34 @@ describe("SignUp Page", () => {
     })
 
     describe('Internaciolização', () => {
+        let portugueseLanguage, englishLanguage;
+
         const setup = () => {
-            render(SignUpPage, {
+            const app = {
+                components: {
+                    SignUpPage,
+                    LanguageSelector
+                },
+                template: `
+                    <SignUpPage />
+                    <LanguageSelector />
+                `
+            }
+
+            render(app, {
                 global: {
                     plugins: [i18n]
                 }
             })
+
+            portugueseLanguage = screen.queryByTitle("Português")
+            englishLanguage = screen.queryByTitle("English")
         }
+
+        afterEach(() => {
+            i18n.global.locale = 'en'
+        })
+        
 
         it('Idioma inicial dos textos seja em inglês', async () => {
             setup()
@@ -271,9 +293,7 @@ describe("SignUp Page", () => {
 
         it('exibir os textos em português depois de selecionarmos o idioma', async () => {
             setup()
-
-            const portugues = screen.queryByTitle("Português")
-            await userEvent.click(portugues)
+            await userEvent.click(portugueseLanguage)
 
             expect(screen.queryByRole("heading", {name: ptBr.signUp })).toBeInTheDocument()
             expect(screen.queryByRole("button", {name: ptBr.signUp })).toBeInTheDocument()
@@ -286,12 +306,8 @@ describe("SignUp Page", () => {
 
         it('exibir os textos em inglês depois de traduzirmos a página a partir do português', async () => {
             setup()
-
-            const portugues = screen.queryByTitle("Português")
-            await userEvent.click(portugues)
-
-            const english = screen.queryByTitle("English")
-            await userEvent.click(english)
+            await userEvent.click(portugueseLanguage)
+            await userEvent.click(englishLanguage)
 
             expect(screen.queryByRole("heading", {name: en.signUp })).toBeInTheDocument()
             expect(screen.queryByRole("button", {name: en.signUp })).toBeInTheDocument()
