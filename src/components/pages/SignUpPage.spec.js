@@ -1,7 +1,6 @@
 import SignUpPage from "./SignUpPage.vue";
 import LanguageSelector from "../../components/LanguageSelector"
 import { render, screen, waitFor } from "@testing-library/vue";
-import "@testing-library/jest-dom"
 import userEvent from "@testing-library/user-event"
 // import axios from "axios"
 import { setupServer } from "msw/node"
@@ -280,12 +279,7 @@ describe("SignUp Page", () => {
             password = screen.queryByLabelText(en.password)
             passwordRepeat = screen.queryByLabelText(en.passwordRepeat)
             button = screen.queryByRole("button", { name: en.signUp })
-        }
-
-        afterEach(() => {
-            i18n.global.locale = 'en'
-        })
-        
+        }        
 
         it('Idioma inicial dos textos seja em inglês', async () => {
             setup()

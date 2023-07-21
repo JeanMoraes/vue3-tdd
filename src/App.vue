@@ -1,18 +1,21 @@
 <template>
   <div class="container">
-    <SignUpPage />
+    <HomePage />
+    <!-- <SignUpPage /> -->
     <LanguageSelector />
   </div>
 </template>
 
 <script>
-import SignUpPage from './components/pages/SignUpPage.vue'
+// import SignUpPage from './components/pages/SignUpPage.vue'
+import HomePage from './components/pages/HomePage.vue'
 import LanguageSelector from './components/LanguageSelector.vue'
 
 export default {
   name: 'App',
   components: {
-    SignUpPage,
+    // SignUpPage,
+    HomePage,
     LanguageSelector
   }
 }
