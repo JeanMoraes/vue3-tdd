@@ -251,7 +251,7 @@ describe("SignUp Page", () => {
     })
 
     describe('Internaciolização', () => {
-        let portugueseLanguage, englishLanguage;
+        let portugueseLanguage, englishLanguage, password, passwordRepeat;
 
         const setup = () => {
             const app = {
@@ -273,6 +273,8 @@ describe("SignUp Page", () => {
 
             portugueseLanguage = screen.queryByTitle("Português")
             englishLanguage = screen.queryByTitle("English")
+            password = screen.queryByLabelText(en.password)
+            passwordRepeat = screen.queryByLabelText(en.passwordRepeat)
         }
 
         afterEach(() => {
@@ -316,6 +318,15 @@ describe("SignUp Page", () => {
             expect(screen.queryByLabelText(en.email)).toBeInTheDocument()
             expect(screen.queryByLabelText(en.password)).toBeInTheDocument()
             expect(screen.queryByLabelText(en.passwordRepeat)).toBeInTheDocument()
+        })
+
+        it('Exibindo mensagem de erro para senhas diferentes em português', async () => {
+            setup()
+            await userEvent.click(portugueseLanguage)
+            await userEvent.type(password, "Senha")
+            await userEvent.type(passwordRepeat, "SenhaDiferente")
+            const validation = screen.queryByText(ptBr.passwordMismatchValidation)
+            expect(validation).toBeInTheDocument()
         })
     })
 })
