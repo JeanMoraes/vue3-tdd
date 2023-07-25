@@ -12,7 +12,7 @@
 
                 <div class="text-center">
                     <button class="btn btn-primary" :disabled="isDisabled || apiProgress" @click.prevent="submit">
-                        <span v-if="apiProgress" class="spinner-border spinner-border-sm" role="status"></span>
+                        <SpinnerLoading v-if="apiProgress" />
                         {{$t('signUp')}}
                     </button>
                 </div>
@@ -28,11 +28,13 @@
 // import axios from "axios"
 import { signUp } from "../../api/apiCalls"
 import Input from "../../components/Input.vue"
+import SpinnerLoading from "../../components/SpinnerLoading.vue"
 
 export default {
     name: "SignUpPage",
     components: {
-        Input
+        Input,
+        SpinnerLoading
     },
     data(){
         return {
