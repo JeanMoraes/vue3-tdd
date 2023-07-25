@@ -1,21 +1,32 @@
 <template>
+  <div class="shadow-sm bg-light">
+    <nav class="navbar navbar-expand bg-body-tertiary container">
+      <div class="container-fluid p-0">
+        <router-link class="navbar-brand" to="/" title="Home">
+          <img src="./assets/hoaxify.png" width="60" alt="Vue3 + TDD" />
+        Vue3 TDD
+        </router-link>
+        <ul class="navbar-nav ml-auto">
+          <router-link class="nav-link" to="/">Home</router-link>
+          <router-link class="nav-link" to="/signup">Sign Up</router-link>
+          <router-link class="nav-link" to="/login">Login</router-link>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
   <div class="container">
-    <HomePage />
-    <!-- <SignUpPage /> -->
+    <router-view />
     <LanguageSelector />
   </div>
 </template>
 
 <script>
-// import SignUpPage from './components/pages/SignUpPage.vue'
-import HomePage from './components/pages/HomePage.vue'
 import LanguageSelector from './components/LanguageSelector.vue'
 
 export default {
   name: 'App',
   components: {
-    // SignUpPage,
-    HomePage,
     LanguageSelector
   }
 }
