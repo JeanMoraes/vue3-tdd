@@ -4,6 +4,7 @@ import HomePage from '../components/pages/HomePage'
 import SignUpPage from '../components/pages/SignUpPage'
 import LoginPage from '../components/pages/LoginPage'
 import UserPage from '../components/pages/UserPage'
+import AccountActivationPage from '../components/pages/AccountActivationPage'
 
 const routes = [
     {
@@ -17,6 +18,9 @@ const routes = [
     },
     {
         path: '/user/:id', component: UserPage
+    },
+    {
+        path: '/activate/:token', component: AccountActivationPage
     }
 ]
 

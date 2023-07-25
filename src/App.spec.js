@@ -21,10 +21,8 @@ describe('Roteamento', () => {
         expect(page).toBeInTheDocument()
     })
 
-    it('Não exibir a página SignUpPage no endereço /', () => {
-        render(App, {
-            global: { plugins: [i18n]}
-        })
+    it('Não exibir a página SignUpPage no endereço /', async () => {
+        await setup('/')
         const page = screen.queryByTestId('signup-page')
         expect(page).not.toBeInTheDocument()
     })

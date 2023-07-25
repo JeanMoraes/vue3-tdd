@@ -22,12 +22,14 @@
 </template>
 
 <script>
+import { RouterLink, RouterView } from 'vue-router'
 import LanguageSelector from './components/LanguageSelector.vue'
 
 export default {
   name: 'App',
   components: {
-    LanguageSelector
+    LanguageSelector,
+    RouterLink, RouterView
   }
 }
 </script>
