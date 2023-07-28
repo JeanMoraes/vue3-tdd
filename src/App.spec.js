@@ -10,7 +10,14 @@ import userEvent from "@testing-library/user-event"
 
 const server = setupServer(
     rest.get('/api/1.0/users', (req, res, ctx) => {
-        return res(ctx.status(200))
+        return res(ctx.status(200), ctx.json({
+            content: [
+                { id: 1, username: 'user-in-list', email: 'user-in-list@mail.com', image: null },
+            ],
+            page: 0,
+            size: 0,
+            totalPages: 0
+        }))
     })
 );
 
@@ -57,6 +64,14 @@ describe('Roteamento', () => {
         await userEvent.click(link)
 
         const page = await screen.findByTestId(visiblePage)
+        expect(page).toBeInTheDocument()
+    })
+
+    it('Navegando para a página do usuário após clicar no usuário na lista de usuários', async () => {
+        await setup('/')
+        const user = await screen.findByText('user-in-list')
+        await userEvent.click(user)
+        const page = await screen.findByTestId('user-page')
         expect(page).toBeInTheDocument()
     })
 })
