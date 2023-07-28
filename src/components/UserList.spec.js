@@ -3,6 +3,8 @@ import UserList from './UserList.vue'
 import { render, screen } from '@testing-library/vue';
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
+import userEvent from "@testing-library/user-event"
+
 const server = setupServer(
     rest.get('/api/1.0/users', (req, res, ctx) => {
         // api/1.0/users?page=0&size=3
@@ -12,7 +14,7 @@ const server = setupServer(
         if(Number.isNaN(page)) page = 0
         if(Number.isNaN(size)) size = 5
 
-        return res(ctx.status(200), ctx.json(getPage(0, 3)))
+        return res(ctx.status(200), ctx.json(getPage(page, size)))
     })
 );
 
@@ -52,4 +54,56 @@ describe('User List', () => {
         const users = await screen.findAllByText(/user/)
         expect(users.length).toBe(3)
     })
+
+    it('Exibir o link para a próxima página da lista de usuários', async () => {
+        render(UserList)
+        await screen.findByText('user1')
+        const nextPageLink = screen.queryByText('next')
+        expect(nextPageLink).toBeInTheDocument()
+    })
+
+    it('Exibir a próxima página depois de clicar no link next >', async () => {
+        render(UserList)
+        await screen.findByText('user1')
+        const nextPageLink = screen.queryByText('next')
+        await userEvent.click(nextPageLink)
+        const firstUserOnPage2 = await screen.findByText('user4')
+        expect(firstUserOnPage2).toBeInTheDocument()
+    })
+
+    it('Ocultando o botão next na última página', async () => {
+        render(UserList)
+        await screen.findByText('user1')
+        await userEvent.click(screen.queryByText('next'))
+        await screen.findByText('user4')
+        await userEvent.click(screen.queryByText('next'))
+        await screen.findByText('user7')
+        expect(screen.queryByText('next')).not.toBeInTheDocument()
+    })
+
+    it('Não exibir o botão previous na primeira página', async () => {
+        render(UserList)
+        await screen.findByText('user1')
+       expect(screen.queryByText('previous')).not.toBeInTheDocument()
+    })
+
+    it('Exibir o botão previous na página 2', async () => {
+        render(UserList)
+        await screen.findByText('user1')
+        await userEvent.click(screen.queryByText('next'))
+        await screen.findByText('user4')
+        expect(screen.queryByText('previous')).toBeInTheDocument()
+    })
+
+    it('Exibir a página anterior após clicar no botão previous', async () => {
+        render(UserList)
+        await screen.findByText('user1')
+        await userEvent.click(screen.queryByText('next'))
+        await screen.findByText('user4')
+        await userEvent.click(screen.queryByText('previous'))
+        const firstUserOnPage1 = await screen.findByText('user1')
+        expect(firstUserOnPage1).toBeInTheDocument()
+    })
+
+    
 })
