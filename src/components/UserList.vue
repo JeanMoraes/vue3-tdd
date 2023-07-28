@@ -10,7 +10,8 @@
                 class="list-group-item list-group-item-action"
                 @click="$router.push(`/user/${user.id}`)"
             >
-                {{ user.username }}
+                <!-- {{ user.username }} -->
+                <UserListItem :user="user"/> 
             </li>
         </ul>
         <div class="card-footer">
@@ -21,9 +22,12 @@
 </template>
 
 <script>
-
+import UserListItem from './UserListItem.vue'
 import { loadUsers } from '../api/apiCalls'
 export default {
+    components: {
+        UserListItem,
+    },
     data() {
         return {
             page: {
