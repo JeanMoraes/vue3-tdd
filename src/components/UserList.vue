@@ -10,7 +10,6 @@
                 class="list-group-item list-group-item-action"
                 @click="$router.push(`/user/${user.id}`)"
             >
-                <!-- {{ user.username }} -->
                 <UserListItem :user="user"/> 
             </li>
         </ul>
