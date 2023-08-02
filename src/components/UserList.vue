@@ -13,19 +13,37 @@
                 <UserListItem :user="user"/> 
             </li>
         </ul>
-        <div class="card-footer">
-            <button class="btn btn-outline-secondary btn-sm" v-if="page.page > 0" @click="loadData(this.page.page - 1)" title="previous">previous</button>
-            <button class="btn btn-outline-secondary btn-sm float-end" v-if="page.totalPages > page.page + 1" @click="loadData(this.page.page + 1)" title="next">next</button>
+        <div class="card-footer text-center">
+            <button
+                class="btn btn-outline-secondary btn-sm float-start"
+                v-show="page.page > 0 && !pendingApiCall"
+                @click="loadData(this.page.page - 1)"
+                title="previous">
+                    previous
+            </button>
+
+            <button
+                class="btn btn-outline-secondary btn-sm float-end"
+                v-show="page.totalPages > page.page + 1 && !pendingApiCall"
+                @click="loadData(this.page.page + 1)"
+                title="next">
+                    next
+            </button>
+            
+            <SpinnerLoading v-show="pendingApiCall" size="normal" />
         </div>
     </div>
 </template>
 
 <script>
 import UserListItem from './UserListItem.vue'
+import SpinnerLoading from './SpinnerLoading.vue'
+
 import { loadUsers } from '../api/apiCalls'
 export default {
     components: {
         UserListItem,
+        SpinnerLoading,
     },
     data() {
         return {
@@ -34,7 +52,8 @@ export default {
                 page: 0,
                 size: 0,
                 totalPages: 0
-            }
+            },
+            pendingApiCall: true,
         }
     },
     async mounted() {
@@ -42,13 +61,11 @@ export default {
     },
     methods: {
         async loadData(pageIndex) {
+            this.pendingApiCall = true
             const response = await loadUsers(pageIndex)
             this.page = response.data
+            this.pendingApiCall = false
         },
-        async loadPrevious() {
-            const response = await loadUsers(this.page.page - 1)
-            this.page = response.data
-        }
     }
 }
 </script>

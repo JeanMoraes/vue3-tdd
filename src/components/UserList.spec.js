@@ -70,7 +70,7 @@ describe('User List', () => {
         await setup()
         await screen.findByText('user1')
         const nextPageLink = screen.queryByText('next')
-        expect(nextPageLink).toBeInTheDocument()
+        expect(nextPageLink).toBeVisible()
     })
 
     it('Exibir a próxima página depois de clicar no link next >', async () => {
@@ -89,13 +89,13 @@ describe('User List', () => {
         await screen.findByText('user4')
         await userEvent.click(screen.queryByText('next'))
         await screen.findByText('user7')
-        expect(screen.queryByText('next')).not.toBeInTheDocument()
+        expect(screen.queryByText('next')).not.toBeVisible()
     })
 
     it('Não exibir o botão previous na primeira página', async () => {
         await setup()
         await screen.findByText('user1')
-       expect(screen.queryByText('previous')).not.toBeInTheDocument()
+       expect(screen.queryByText('previous')).not.toBeVisible()
     })
 
     it('Exibir o botão previous na página 2', async () => {
@@ -103,7 +103,7 @@ describe('User List', () => {
         await screen.findByText('user1')
         await userEvent.click(screen.queryByText('next'))
         await screen.findByText('user4')
-        expect(screen.queryByText('previous')).toBeInTheDocument()
+        expect(screen.queryByText('previous')).toBeVisible()
     })
 
     it('Exibir a página anterior após clicar no botão previous', async () => {
@@ -113,8 +113,29 @@ describe('User List', () => {
         await screen.findByText('user4')
         await userEvent.click(screen.queryByText('previous'))
         const firstUserOnPage1 = await screen.findByText('user1')
-        expect(firstUserOnPage1).toBeInTheDocument()
+        expect(firstUserOnPage1).toBeVisible()
     })
+
+    // it('Exibindo um indicativo de loading durante a chamada para a api', async () => {
+    //     await setup()
+    //     const spinner = screen.queryByRole('status')
+    //     expect(spinner).toBeVisible()
+    // })
+
+    // it('Ocultar o indicativo de loading quando a chamada para a api terminar', async () => {
+    //     await setup()
+    //     const spinner = screen.queryByRole('status')
+    //     await screen.findByText('user1')
+    //     expect(spinner).not.toBeVisible()
+    // })
+
+    // it('Exibir o loading após clicar no botão next', async () => {
+    //     await setup()
+    //     await screen.findByText('user1')
+    //     await userEvent.click(screen.queryByText('next'))
+    //     const spinner = screen.queryByRole("status")
+    //     expect(spinner).toBeInTheDocument()
+    // })
 
     
 })
