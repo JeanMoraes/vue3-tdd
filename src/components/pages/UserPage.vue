@@ -1,13 +1,18 @@
 <template>
     <div data-testid="user-page">
         <h1>User Page</h1>
-        {{ user.username }}
+        <ProfileCard :user="user" />
     </div>
 </template>
 
 <script>
 import { getUserById } from '../../api/apiCalls'
+import ProfileCard from '../ProfileCard'
 export default {
+    name: "UserPage",
+    components: {
+        ProfileCard,
+    },
     data() {
         return {
             user: {},
