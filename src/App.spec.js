@@ -18,6 +18,17 @@ const server = setupServer(
             size: 0,
             totalPages: 0
         }))
+    }),
+    rest.get('/api/1.0/users/:id', (req, res, ctx) => {
+        const id = Number.parseInt(req.params.id)
+        return res(ctx.status(200), ctx.json({
+            content: [
+                { id, username: `user${id}`, email: `user${id}@mail.com`, image: null },
+            ],
+            page: 0,
+            size: 0,
+            totalPages: 0
+        }))
     })
 );
 
