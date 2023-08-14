@@ -5,6 +5,12 @@ import { setupServer } from 'msw/node'
 import { rest } from 'msw'
 import userEvent from "@testing-library/user-event"
 
+import en from "../locale/en.json"
+import i18n from "../locale/i18n";
+import ptBr from "../locale/pt-br.json"
+
+import LanguageSelector from './LanguageSelector.vue'
+
 import router from "../routes/router"
 
 const server = setupServer(
@@ -50,9 +56,20 @@ const users = [
 ]
 
 const setup = async () => {
-    render(UserList, {
+    const app = {
+        components: {
+            UserList,
+            LanguageSelector
+        },
+        template: `
+            <UserList />
+            <LanguageSelector />
+        `
+    }
+
+    render(app, {
         global: {
-            plugins: [ router ]
+            plugins: [ router, i18n ]
         }
     })
     await router.isReady()
@@ -137,5 +154,30 @@ describe('User List', () => {
     //     expect(spinner).toBeInTheDocument()
     // })
 
-    
+})
+
+describe('Internacionalização', () => {
+    it('Exibir o cabeçalho e links em inglês inicialmente', async () => {
+        await setup()
+        await screen.findByText('user1')
+        await userEvent.click(screen.queryByText('next'))
+        await screen.findByText('user4')
+
+        expect(screen.queryByText(en.users)).toBeInTheDocument()
+        expect(screen.queryByText(en.nextPage)).toBeInTheDocument()
+        expect(screen.queryByText(en.previousPage)).toBeInTheDocument()
+    })
+
+    it("Exibir o cabeçalho e os links em português após selecionar esse idioma", async () => {
+        await setup()
+        await screen.findByText('user1')
+        await userEvent.click(screen.queryByText('next'))
+        await screen.findByText('user4')
+        const portugueseLanguageSelector = screen.queryByTitle("Português")
+        
+        await userEvent.click(portugueseLanguageSelector)
+        expect(screen.queryByText(ptBr.users)).toBeInTheDocument()
+        expect(screen.queryByText(ptBr.nextPage)).toBeInTheDocument()
+        expect(screen.queryByText(ptBr.previousPage)).toBeInTheDocument()
+    })
 })

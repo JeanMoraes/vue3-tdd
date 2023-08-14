@@ -4,5 +4,8 @@
     "email": "Email",
     "password": "Senha",
     "passwordRepeat": "Repita a senha",
-    "passwordMismatchValidation": "As senhas não combinam"
+    "passwordMismatchValidation": "As senhas não combinam",
+    "users": "Usuários",
+    "nextPage": "próxima",
+    "previousPage": "anterior"
 }
