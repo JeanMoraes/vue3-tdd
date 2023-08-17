@@ -19,17 +19,21 @@ const server = setupServer(
             totalPages: 0
         }))
     }),
-    rest.get('/api/1.0/users/:id', (req, res, ctx) => {
-        const id = Number.parseInt(req.params.id)
-        return res(ctx.status(200), ctx.json({
-            content: [
-                { id, username: `user${id}`, email: `user${id}@mail.com`, image: null },
-            ],
-            page: 0,
-            size: 0,
-            totalPages: 0
-        }))
-    })
+    rest.get("/api/1.0/users/:id", (req, res, ctx) => {
+        const id = Number.parseInt(req.params.id);
+        return res(
+          ctx.status(200),
+          ctx.json({
+            id,
+            username: `user${id}`,
+            email: `user${id}@mail.com`,
+            image: null,
+          })
+        );
+      }),
+    rest.post("/api/1.0/auth", (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json({ id: 5, username: "user5" }));
+      })
 );
 
 beforeAll(() => server.listen())
@@ -86,18 +90,12 @@ describe('Roteamento', () => {
         expect(page).toBeInTheDocument()
     })
 
-    // it('Redirecionando para home após o login', async () => {
-    //     server.use(
-    //         rest.post('/api/1.0.0/auth', (req, res, ctx) => {
-    //             return res(ctx.status(200), ctx.json({ username: 'user5'}))
-    //         })
-    //     )
-        
-    //     await setup('/login')
-    //     await userEvent.type(screen.queryByLabelText('E-mail'), 'user5@mail.com')
-    //     await userEvent.type(screen.queryByLabelText('Password'), 'P4ssword')
-    //     await userEvent.click(screen.queryByRole('button', { name: 'Login'}))
-    //     const page = await screen.findByTestId('home-page')
-    //     expect(page).toBeInTheDocument()
-    // })
+    it('Redirecionando para home após o login', async () => {
+        await setup('/login')
+        await userEvent.type(screen.queryByLabelText('E-mail'), 'user5@mail.com')
+        await userEvent.type(screen.queryByLabelText('Password'), 'P4ssword')
+        await userEvent.click(screen.queryByRole('button', { name: 'Login'}))
+        const page = await screen.findByTestId('home-page')
+        expect(page).toBeInTheDocument()
+    })
 })
