@@ -8,8 +8,12 @@
                 <Input id="email" label="E-mail" v-model="email" />
                 <Input id="password" type="password" label="Password" v-model="password" />
 
+                <div v-if="failMessage" class="alert alert-danger text-center">
+                    {{ failMessage }}
+                </div>
+
                 <div class="text-center">
-                    <button class="btn btn-primary" :disabled="isDisabled">
+                    <button class="btn btn-primary" :disabled="isDisabled || apiProgress" @click.prevent="submit">
                         <!-- <SpinnerLoading v-if="apiProgress" /> -->
                         Login
                     </button>
@@ -22,6 +26,8 @@
 <script>
 import Input from "../Input.vue"
 // import SpinnerLoading from '../SpinnerLoading.vue'
+
+import { login } from "../../api/apiCalls"
 export default {
     name: 'LoginPage',
     components: {
@@ -32,11 +38,32 @@ export default {
         return {
             email: '',
             password: '',
+            apiProgress: false,
+            failMessage: undefined,
         }
     },
     computed: {
         isDisabled() {
             return !(this.email && this.password)
+        }
+    },
+    methods: {
+        async submit() {
+            this.apiProgress = true
+            try{
+                await login({email: this.email, password: this.password})
+            } catch(error){
+                this.failMessage = error.response.data.message
+            }
+            this.apiProgress = false
+        }
+    },
+    watch: {
+        email() {
+            this.failMessage = undefined
+        },
+        password() {
+            this.failMessage = undefined
         }
     }
 

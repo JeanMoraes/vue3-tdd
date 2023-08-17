@@ -1,8 +1,8 @@
 <template>
-     <span
+     <p
      class="spinner-border"
      :class="{'spinner-border-sm' : size === 'small'}"
-     role="status"></span>
+     role="status"></p>
 </template>
 
 <script>
