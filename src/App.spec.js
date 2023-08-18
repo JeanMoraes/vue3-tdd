@@ -2,6 +2,7 @@ import { screen, render} from "@testing-library/vue"
 import App from './App.vue'
 import i18n from "./locale/i18n"
 import router from "./routes/router"
+import store from "./state/store"
 
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
@@ -44,7 +45,7 @@ afterAll(() => server.close())
 
 const setup = async (path) => {
     render(App, {
-        global: { plugins: [i18n, router]}
+        global: { plugins: [i18n, router, store]}
     })
     router.replace(path)
     await router.isReady()
@@ -90,12 +91,29 @@ describe('Roteamento', () => {
         expect(page).toBeInTheDocument()
     })
 
-    it('Redirecionando para home após o login', async () => {
+})
+
+describe('Login', () => {
+
+    const setupLogged = async () => {
         await setup('/login')
         await userEvent.type(screen.queryByLabelText('E-mail'), 'user5@mail.com')
         await userEvent.type(screen.queryByLabelText('Password'), 'P4ssword')
         await userEvent.click(screen.queryByRole('button', { name: 'Login'}))
+    }
+
+    it('Redirecionando para home após o login', async () => {
+        await setupLogged()
         const page = await screen.findByTestId('home-page')
         expect(page).toBeInTheDocument()
+    })
+
+    it('Ocultar os botões de login e signup após o usuário logar', async () => {
+        await setupLogged()
+        await screen.findByTestId('home-page')
+        const loginLink = screen.queryByRole('link', { name: 'Login'})
+        const signUpLink = screen.queryByRole('link', { name: 'Sign Up'})
+        expect(loginLink).not.toBeInTheDocument()
+        expect(signUpLink).not.toBeInTheDocument()
     })
 })

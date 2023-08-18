@@ -8,8 +8,8 @@
         </router-link>
         <ul class="navbar-nav ml-auto">
           <router-link class="nav-link" to="/">Home</router-link>
-          <router-link class="nav-link" to="/signup">Sign Up</router-link>
-          <router-link class="nav-link" to="/login">Login</router-link>
+          <router-link v-if="!$store.state.isLoggedIn" class="nav-link" to="/signup">Sign Up</router-link>
+          <router-link v-if="!$store.state.isLoggedIn" class="nav-link" to="/login">Login</router-link>
         </ul>
       </div>
     </nav>

@@ -53,6 +53,7 @@ export default {
             try{
                 await login({email: this.email, password: this.password})
                 this.$router.push('/')
+                this.$store.commit('loginSuccess')
             } catch(error){
                 this.failMessage = error.response.data.message
             }
