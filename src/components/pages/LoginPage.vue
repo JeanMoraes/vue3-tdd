@@ -52,8 +52,13 @@ export default {
             this.apiProgress = true
             try{
                 const response = await login({email: this.email, password: this.password})
+
+                const data = {
+                    ...response.data,
+                    token: `Bearer ${response.data.token}`
+                }
                 this.$router.push('/')
-                this.$store.commit('loginSuccess', response.data.id)
+                this.$store.commit('loginSuccess', data)
             } catch(error){
                 this.failMessage = error.response.data.message
             }

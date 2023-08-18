@@ -5,6 +5,9 @@ import userEvent from "@testing-library/user-event"
 import { setupServer } from "msw/node"
 import { rest } from "msw"
 
+import store from "../../state/store"
+// import storage from "../../state/storage"
+
 let requestBody, counter = 0;
 const server = setupServer(
     rest.post("/api/1.0/auth", (req, res, ctx) => {
@@ -26,7 +29,18 @@ afterAll(() => server.close())
 
 let emailInput, passwordInput, button
 const setup = async () => {
-    render(LoginPage);
+    render(LoginPage, {
+        global: {
+            plugins: [store],
+            mocks: {
+                $router: {
+                    push: {
+                        token: () => {}
+                    }
+                }
+            }
+        }
+    });
     emailInput = screen.queryByLabelText("E-mail");
     passwordInput = screen.queryByLabelText("Password");
     button = screen.queryByRole("button", { name: "Login"});
@@ -129,6 +143,24 @@ describe("LoginPage", () => {
             await userEvent.type(passwordInput, 'N4v@')
             expect(errorMessage).not.toBeInTheDocument()
         })
+
+        // it('Salvar id, username e imagem do usuário no storage', async () => {
+        //     server.use(
+        //         rest.post("/api/1.0/auth", (req, res, ctx) => {
+        //             return res(ctx.status(200), ctx.json({
+        //                 id: 5, username: 'user5', image: null
+        //             }))
+        //         })
+        //     )
+        //     await setupFilled()
+        //     await userEvent.click(button)
+        //     // waitForElementToBeRemove - aguardar o spinner ser removido
+        //     const storedState = storage.getItem('auth')
+        //     const keys = Object.keys(storedState)
+        //     expect(keys.includes('id')).toBeTruthy
+        //     expect(keys.includes('username')).toBeTruthy
+        //     expect(keys.includes('image')).toBeTruthy
+        // })
 
     })
 })
