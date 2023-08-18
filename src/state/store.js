@@ -3,12 +3,14 @@ import { createStore } from 'vuex'
 const store = createStore({
     state() {
         return {
+            id:'',
             isLoggedIn: false,
         }
     },
     mutations: {
-        loginSuccess(state) {
-            state.isLoggedIn = true
+        loginSuccess(state, id) {
+            state.isLoggedIn = true,
+            state.id = id
         }
     }
 })

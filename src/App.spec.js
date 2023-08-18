@@ -116,4 +116,22 @@ describe('Login', () => {
         expect(loginLink).not.toBeInTheDocument()
         expect(signUpLink).not.toBeInTheDocument()
     })
+
+    it('Mostrar o link My Profile após o login', async () => {
+        await setupLogged()
+        await screen.findByTestId('home-page')
+        const myProfileLink = screen.queryByRole('link', { name: 'My Profile'})
+        expect(myProfileLink).toBeInTheDocument()
+    })
+
+    it('Exibir a página do usuário logado após clicar no link My Profile', async () => {
+        await setupLogged()
+        await screen.findByTestId('home-page')
+        const myProfileLink = screen.queryByRole('link', { name: 'My Profile'})
+        await userEvent.click(myProfileLink)
+        await screen.findByTestId('user-page')
+        const header = await screen.findByRole('heading', { name: 'user5'})
+
+        expect(header).toBeInTheDocument()
+    })
 })
