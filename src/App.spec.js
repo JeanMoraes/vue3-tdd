@@ -3,6 +3,7 @@ import App from './App.vue'
 import i18n from "./locale/i18n"
 import router from "./routes/router"
 import store, { resetAuthState } from "./state/store"
+import storage from "./state/storage"
 
 import { setupServer } from 'msw/node'
 import { rest } from 'msw'
@@ -96,7 +97,7 @@ describe('Roteamento', () => {
 describe('Login', () => {
 
     afterEach(() => {
-        localStorage.clear();
+        storage.clear();
         resetAuthState()
     })
 
@@ -144,12 +145,12 @@ describe('Login', () => {
         await setupLogged()
         await screen.findByTestId('home-page')
 
-        const state = JSON.parse(localStorage.getItem('auth'))
+        const state = storage.getItem('auth')
         expect(state.isLoggedIn).toBeTruthy()
     })
 
     it('Exibir o layout quando estiver logado', async () => {
-        localStorage.setItem('auth', JSON.stringify({ isLoggedIn: true }))
+        storage.setItem('auth', { isLoggedIn: true })
         resetAuthState()
         await setup('/')
         const myProfileLink = screen.queryByRole('link', { name: 'My Profile'})
