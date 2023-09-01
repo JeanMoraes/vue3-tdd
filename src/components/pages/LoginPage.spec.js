@@ -8,11 +8,12 @@ import { rest } from "msw"
 import store from "../../state/store"
 // import storage from "../../state/storage"
 
-let requestBody, counter = 0;
+// let requestBody, counter = 0;
+let requestBody;
 const server = setupServer(
     rest.post("/api/1.0/auth", (req, res, ctx) => {
         requestBody = req.body
-        counter += 1;
+        // counter += 1;
         return res(ctx.status(401), ctx.json({
             message: 'Incorrect credentials'
         }))
@@ -21,8 +22,7 @@ const server = setupServer(
 
 beforeAll(() => server.listen())
 beforeEach(() => {
-    counter = 0;
-    console.log(counter)
+    // counter = 0;
     server.resetHandlers()
 })
 afterAll(() => server.close())
